@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PJ | Brun Phile Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap');
+        
+        :root {
+            --deep-coffee: #2d1b14;
+            --mocha: #4e342e;
+            --chocolate: #5d4037;
+            --latte: #bcaaa4;
+            --cream: #efebe9;
+            --accent: #8d6e63;
+            --orange-verify: #FF8F00;
+        }
+
+        body {
+            background-color: #3e2723;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            color: var(--cream);
+            margin: 0;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .island-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(rgba(62, 39, 35, 0.7), rgba(62, 39, 35, 0.85)),
+                        url('https://images.unsplash.com/photo-1559128010-7c1ad6e1b6a5?ixlib=rb-4.0.3&auto=format&fit=crop&w=1170&q=80');
+            background-size: cover;
+            background-position: center;
+            z-index: -1;
+            filter: sepia(10%);
+        }
+
+        .main-container {
+            width: 100%;
+            max-width: 400px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: transform 0.5s ease, opacity 0.5s ease;
+        }
+
+        .profile-card {
+            background: rgba(93, 64, 55, 0.25);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(239, 235, 233, 0.15);
+            border-radius: 40px;
+            padding: 3rem 1.5rem;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.25);
+            animation: fadeIn 1s ease-out;
+            position: relative;
+        }
+
+        .logo-text {
+            font-family: 'Playfair Display', serif;
+            font-size: 3.5rem;
+            letter-spacing: 0.3rem;
+            color: var(--cream);
+            margin-top: 0;
+            margin-bottom: 0.2rem;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            background: rgba(239, 235, 233, 0.08);
+            border: 0.5px solid rgba(188, 170, 164, 0.3);
+            border-radius: 30px;
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 2.2px;
+            margin-bottom: 1.2rem;
+            color: var(--latte);
+        }
+
+        .divider {
+            width: 40px;
+            height: 1.5px;
+            background: var(--latte);
+            margin: 1rem auto;
+            opacity: 0.4;
+        }
+
+        .action-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 85%;
+            margin: 0.7rem auto;
+            padding: 1rem;
+            background: rgba(239, 235, 233, 0.05);
+            border: 1px solid rgba(188, 170, 164, 0.15);
+            border-radius: 18px;
+            color: var(--cream);
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 400;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .action-button:hover {
+            background: rgba(239, 235, 233, 0.1);
+            border-color: var(--latte);
+            transform: scale(0.97);
+        }
+
+        .sub-options {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease-out, opacity 0.3s ease;
+            opacity: 0;
+            display: flex;
+            flex-direction: column;
+            width: 85%;
+            margin: 0 auto;
+        }
+
+        .sub-options.active {
+            max-height: 200px;
+            opacity: 1;
+            margin-bottom: 0.5rem;
+        }
+
+        .sub-button {
+            display: flex;
+            align-items: center;
+            padding: 0.8rem 1.2rem;
+            margin: 0.3rem 0;
+            background: rgba(239, 235, 233, 0.03);
+            border: 1px dashed rgba(188, 170, 164, 0.2);
+            border-radius: 12px;
+            font-size: 0.75rem;
+            color: var(--latte);
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .pj-original-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            margin-right: 12px;
+            object-fit: cover;
+            border: 1px solid rgba(239, 235, 233, 0.3);
+        }
+
+        /* --- CHAT INTERFACE --- */
+        #chat-interface {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #1a120f;
+            z-index: 100;
+            display: none;
+            flex-direction: column;
+            animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        #chat-interface.active {
+            display: flex;
+        }
+
+        .chat-header {
+            background: #2d1b14;
+            padding: 1rem;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid rgba(239, 235, 233, 0.1);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            position: relative;
+            z-index: 10;
+        }
+
+        .back-btn {
+            font-size: 1.2rem;
+            margin-right: 1rem;
+            cursor: pointer;
+            color: var(--latte);
+        }
+
+        .header-info {
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+
+        .header-name {
+            font-weight: 600;
+            font-size: 0.95rem;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            color: var(--cream);
+            text-transform: uppercase;
+        }
+
+        .verify-badge {
+            color: var(--orange-verify);
+            font-size: 0.8rem;
+            margin-left: 6px;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .header-status {
+            font-size: 0.7rem;
+            color: #8d6e63;
+        }
+
+        .chat-messages {
+            flex-grow: 1;
+            padding: 1.5rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            background: #1a120f;
+            position: relative;
+        }
+
+        .chat-watermark {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 250px;
+            height: 250px;
+            background-image: url('https://i.postimg.cc/RZTnWr5q/Screenshot-20260311-003221-Gallery.png');
+            background-size: cover;
+            background-position: center;
+            border-radius: 50%;
+            opacity: 0.05;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .message {
+            max-width: 80%;
+            padding: 0.8rem 1rem;
+            border-radius: 18px;
+            font-size: 0.85rem;
+            line-height: 1.4;
+            position: relative;
+            z-index: 1;
+            word-wrap: break-word;
+        }
+
+        .message.received {
+            align-self: flex-start;
+            background: #3e2723;
+            color: var(--cream);
+            border-bottom-left-radius: 4px;
+        }
+
+        .message.sent {
+            align-self: flex-end;
+            background: var(--chocolate);
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+
+        .message-time {
+            font-size: 0.6rem;
+            opacity: 0.5;
+            display: block;
+            margin-top: 4px;
+            text-align: right;
+        }
+
+        .chat-input-area {
+            background: #2d1b14;
+            padding: 0.8rem 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            padding-bottom: env(safe-area-inset-bottom, 1rem);
+            position: relative;
+            z-index: 10;
+        }
+
+        .input-wrapper {
+            flex-grow: 1;
+            background: rgba(239, 235, 233, 0.05);
+            border: 1px solid rgba(188, 170, 164, 0.2);
+            border-radius: 25px;
+            padding: 0.5rem 1.2rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .chat-input {
+            background: transparent;
+            border: none;
+            outline: none;
+            color: var(--cream);
+            width: 100%;
+            font-size: 0.9rem;
+        }
+
+        .send-btn {
+            width: 42px;
+            height: 42px;
+            background: var(--accent);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideDown { from { transform: translateY(0); } to { transform: translateY(100%); } }
+
+        .footer-text {
+            margin-top: 2rem;
+            font-size: 0.6rem;
+            opacity: 0.4;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+    </style>
+</head>
+<body>
+    <div class="island-bg"></div>
+
+    <!-- Portal -->
+    <div id="portal-screen" class="main-container">
+        <div class="profile-card">
+            <h1 class="logo-text">ᴘᴊ</h1>
+            <div class="status-badge">ᴄᴏᴍᴘᴀɴʏ ᴏᴡɴᴇʀ</div>
+            <p class="text-xs opacity-70 mb-4 font-light tracking-wide italic">
+                ɪsʟᴀɴᴅ ᴠɪʙᴇs ⌇ ᴀ&ɴ <br>
+                𝟷𝟾⁺ | ʙʀᴜɴ ᴘʜɪʟᴇ ᴀᴇsᴛʜᴇᴛɪᴄs
+            </p>
+            <div class="divider"></div>
+            <div class="flex flex-col items-center">
+                <div class="action-button" onclick="toggleConnect()">
+                    <i class="fa-solid fa-paper-plane mr-2"></i> ᴅɪʀᴇᴄᴛ ᴄᴏɴɴᴇᴄᴛ
+                </div>
+                <div id="connect-options" class="sub-options">
+                    <a href="https://wa.me/919434274060" class="sub-button" target="_blank">
+                        <i class="fa-brands fa-whatsapp" style="color: #25D366; margin-right: 10px;"></i> ᴡʜᴀᴛsᴀᴘᴘ ᴄʜᴀᴛ
+                    </a>
+                    <a href="tel:+919434274060" class="sub-button">
+                        <i class="fa-solid fa-phone" style="color: #bc9cff; margin-right: 10px;"></i> ᴘʜᴏɴᴇ ᴄᴀʟʟ
+                    </a>
+                </div>
+                
+                <!-- Facebook Updated Link -->
+                <a href="https://www.facebook.com/share/17Kozrbis2/" target="_blank" class="action-button">
+                    <i class="fa-brands fa-facebook-f mr-3"></i>ғᴀᴄᴇʙᴏᴏᴋ
+                </a>
+                
+                <!-- Instagram Updated Link -->
+                <a href="https://www.instagram.com/warmnut.in?igsh=MWZ0bHdqMWkwcDJlNA==" target="_blank" class="action-button">
+                    <i class="fa-brands fa-instagram mr-3"></i>ɪɴsᴛᴀɢʀᴀᴍ
+                </a>
+
+                <div class="action-button" onclick="openChat()">
+                    <img src="https://i.postimg.cc/RZTnWr5q/Screenshot-20260311-003221-Gallery.png" class="pj-original-icon"> ᴘᴊ ᴄʜᴀᴛ
+                </div>
+            </div>
+            <div class="footer-text">𓏲 ʙᴀsᴇᴅ ɪɴ ᴀɴᴅᴀᴍᴀɴ & ɴɪᴄᴏʙᴀʀ 𓍢ִ໋🌊</div>
+        </div>
+    </div>
+
+    <!-- Chat Screen -->
+    <div id="chat-interface">
+        <div class="chat-header">
+            <div class="back-btn" onclick="closeChat()"><i class="fa-solid fa-arrow-left"></i></div>
+            <img src="https://i.postimg.cc/RZTnWr5q/Screenshot-20260311-003221-Gallery.png" style="width: 38px; height: 38px; border-radius: 50%; margin-right: 12px;">
+            <div class="header-info">
+                <div class="header-name">PRODIPTO CHAKRABORTY <span class="verify-badge"><i class="fa-solid fa-circle-check"></i></span></div>
+                <div class="header-status" id="typing-text">online</div>
+            </div>
+        </div>
+
+        <div id="chat-box" class="chat-messages">
+            <div class="chat-watermark"></div>
+            <div class="message received">
+                Hi! Main PJ ka personal assistant hoon. Puchiye aapko kya madad chahiye? 🌊
+                <span class="message-time">Just now</span>
+            </div>
+        </div>
+
+        <div class="chat-input-area">
+            <div class="input-wrapper">
+                <input type="text" id="user-input" class="chat-input" placeholder="Yahan likhiye..." onkeypress="handleKeyPress(event)">
+            </div>
+            <div class="send-btn" id="send-btn" onclick="sendMessage()">
+                <i class="fa-solid fa-paper-plane"></i>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const systemPrompt = "You are the personal AI of Prodipto Chakraborty (PJ), business owner from Andaman. Respond in short, cool Hinglish. Use emojis 🌊🌴. Keep answers within 2 sentences.";
+        
+        const openRouterKey = "sk-or-v1-c6f09bf45fe9ef9cb6cc9995197afd8697f98898827cc88d777dfb3e921831";
+        const geminiKeys = [
+            "", 
+            "AlzaSyB2dP2gUM8m0lKvuQzo-bc7wunJ9XBHOC",
+            "AlzaSyDjseLbTLJx0xDlodpeEpnpPA76FRQ7Yxk",
+            "AlzaSyAROdvOvV6aJSeYGYGSksyVMlvPL3IIK7Q",
+            "AlzaSyDrl5dW4tBjSS3pPeh7N_5u66iRqu07KOM",
+            "AlzaSyBnEBKzIY1XiFBdh1L2eCo12ceMjdpBj9A"
+        ];
+        
+        let chatHistory = [];
+
+        function toggleConnect() {
+            document.getElementById('connect-options').classList.toggle('active');
+        }
+
+        function openChat() {
+            const chat = document.getElementById('chat-interface');
+            const portal = document.getElementById('portal-screen');
+            chat.style.display = 'flex';
+            portal.style.opacity = '0';
+            portal.style.transform = 'scale(0.9)';
+            setTimeout(() => document.getElementById('user-input').focus(), 500);
+        }
+
+        function closeChat() {
+            const chat = document.getElementById('chat-interface');
+            const portal = document.getElementById('portal-screen');
+            chat.style.animation = 'slideDown 0.4s forwards';
+            setTimeout(() => {
+                chat.style.display = 'none';
+                chat.style.animation = '';
+                portal.style.opacity = '1';
+                portal.style.transform = 'scale(1)';
+            }, 400);
+        }
+
+        async function fetchAIResponse(userText) {
+            for (let i = 0; i < geminiKeys.length; i++) {
+                const key = geminiKeys[i];
+                if (!key && i > 0) continue;
+                
+                try {
+                    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            contents: [{ role: "user", parts: [{ text: systemPrompt + " User message: " + userText }] }],
+                            generationConfig: { maxOutputTokens: 100, temperature: 0.7 }
+                        })
+                    });
+                    if (res.ok) {
+                        const data = await res.json();
+                        if (data && data.candidates) return data.candidates[0].content.parts[0].text;
+                    }
+                } catch (e) { console.log(`Gemini Key ${i} failed...`); }
+            }
+
+            try {
+                const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+                    method: "POST",
+                    headers: {
+                        "Authorization": `Bearer ${openRouterKey}`,
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        "model": "google/gemini-2.0-flash-001",
+                        "messages": [
+                            {"role": "system", "content": systemPrompt},
+                            {"role": "user", "content": userText}
+                        ]
+                    })
+                });
+                const data = await res.json();
+                return data.choices[0].message.content;
+            } catch (e) {
+                return "Abhi saare AI busy hain 🌊, thoda wait kijiye ya WhatsApp kijiye!";
+            }
+        }
+
+        async function sendMessage() {
+            const input = document.getElementById('user-input');
+            const chatBox = document.getElementById('chat-box');
+            const statusText = document.getElementById('typing-text');
+            const text = input.value.trim();
+
+            if (text === "" || statusText.innerText === "typing...") return;
+
+            addMessage(text, 'sent');
+            input.value = "";
+            
+            statusText.innerText = "typing...";
+            statusText.style.color = "#FF8F00";
+
+            const aiResponse = await fetchAIResponse(text);
+            
+            statusText.innerText = "online";
+            statusText.style.color = "#8d6e63";
+            addMessage(aiResponse, 'received');
+        }
+
+        function addMessage(text, type) {
+            const chatBox = document.getElementById('chat-box');
+            const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            const msgDiv = document.createElement('div');
+            msgDiv.className = `message ${type}`;
+            msgDiv.innerHTML = `${text}<span class="message-time">${time}</span>`;
+            chatBox.appendChild(msgDiv);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        function handleKeyPress(e) { if (e.key === 'Enter') sendMessage(); }
+    </script>
+</body>
+</html>
+
+
